@@ -11,7 +11,7 @@ trait AppBlameable
     /**
      * @var User/null $createdBy
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(name="app_created_by_id", referencedColumnName="user_id", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="app_created_by_id", referencedColumnName="use_id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="create")
      * @Serializer\MaxDepth(1)
      */
@@ -19,7 +19,7 @@ trait AppBlameable
     /**
      * @var User/null $updatedBy
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(name="app_updated_by_id", referencedColumnName="user_id", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="app_updated_by_id", referencedColumnName="use_id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="update")
      * @Serializer\MaxDepth(1)
      */

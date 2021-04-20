@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\AppTrait\AppBlameable;
+use App\Entity\AppTrait\AppSoftDeleteable;
+use App\Entity\AppTrait\AppTimestampable;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -12,28 +17,41 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+    use AppBlameable;
+    use AppTimestampable;
+    use AppSoftDeleteable;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="use_id")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true, name="use_email")
      */
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="json", name="use_role")
      */
     private $roles = [];
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", name="use_password")
      */
     private $password;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Group::class, mappedBy="users")
+     */
+    private $groups;
+
+    public function __construct()
+    {
+        $this->groups = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -114,5 +132,32 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|Group[]
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): self
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups[] = $group;
+            $group->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): self
+    {
+        if ($this->groups->removeElement($group)) {
+            $group->removeUser($this);
+        }
+
+        return $this;
     }
 }
