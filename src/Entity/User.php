@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\AppTrait\AppBlameable;
 use App\Entity\AppTrait\AppSoftDeleteable;
 use App\Entity\AppTrait\AppTimestampable;
@@ -14,6 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @ApiResource()
  */
 class User implements UserInterface
 {
@@ -47,6 +49,12 @@ class User implements UserInterface
      * @ORM\ManyToMany(targetEntity=Group::class, mappedBy="users")
      */
     private $groups;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Person::class, mappedBy="appUser", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false, name="use_prs_id", referencedColumnName="prs_id")
+     */
+    private $person;
 
     public function __construct()
     {
@@ -157,6 +165,28 @@ class User implements UserInterface
         if ($this->groups->removeElement($group)) {
             $group->removeUser($this);
         }
+
+        return $this;
+    }
+
+    public function getPerson(): ?Person
+    {
+        return $this->person;
+    }
+
+    public function setPerson(?Person $person): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($person === null && $this->person !== null) {
+            $this->person->setAppUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($person !== null && $person->getAppUser() !== $this) {
+            $person->setAppUser($this);
+        }
+
+        $this->person = $person;
 
         return $this;
     }
