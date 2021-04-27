@@ -183,6 +183,9 @@
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
+    "php": {
+        "version": "7.4"
+    },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
     },
@@ -216,8 +219,8 @@
             "ref": "6c1ceb662f8997085f739cd089bfbef67f245983"
         },
         "files": [
-             "config/packages/stof_doctrine_extensions.yaml"
-                ]
+            "config/packages/stof_doctrine_extensions.yaml"
+        ]
     },
     "symfony/asset": {
         "version": "v5.2.4"
